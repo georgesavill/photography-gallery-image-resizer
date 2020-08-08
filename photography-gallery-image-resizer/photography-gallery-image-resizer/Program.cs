@@ -6,7 +6,13 @@ namespace photography_gallery_image_resizer
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            if (args.Length != 2)
+            {
+                Console.WriteLine("Please provide two arguments - \"INPUT DIRECTORY\" \"OUTPUT DIRECTORY\"");
+                Environment.ExitCode = 0xA0;
+            } 
+            
+
         }
     }
 }
