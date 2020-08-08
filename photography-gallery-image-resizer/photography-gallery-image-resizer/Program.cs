@@ -46,6 +46,8 @@ namespace photography_gallery_image_resizer
 
                 ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension);
                 ResizeImage(imagePath, previewWidth, "_preview", uploadedImageFileName, targetDirectory, uploadedImageExtension);
+
+                File.Move(imagePath, targetDirectory + "\\" + uploadedImageFileName + "." + uploadedImageExtension);
             }
         }
 
