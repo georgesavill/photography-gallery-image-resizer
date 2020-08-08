@@ -23,14 +23,14 @@ namespace photography_gallery_image_resizer
 
             string inputDirectory = args[0];
             string outputDirectory = args[1];
-            Console.WriteLine("Resizing images in " + inputDirectory);
-            if (Directory.Exists(inputDirectory))
+
+            if (Directory.Exists(inputDirectory) && Directory.Exists(outputDirectory))
             {
                 ProcessImages(inputDirectory, outputDirectory);
             }
             else
             {
-                Console.WriteLine("Input directory provided (" + inputDirectory + ") does not exist");
+                Console.WriteLine("Input or output directory provided (" + inputDirectory + " or " + outputDirectory + ") does not exist");
                 Environment.Exit(-1);
             }
         }
@@ -38,6 +38,11 @@ namespace photography_gallery_image_resizer
         static void ProcessImages(string inputDirectory, string outputDirectory)
         {
             string[] fileList = Directory.GetFiles(inputDirectory, "*.jpg", SearchOption.AllDirectories);
+            if (fileList.Length == 0)
+            {
+                Console.WriteLine("No .jpg files present in input directory (" + inputDirectory + ")");
+                Environment.Exit(-1);
+            }
             foreach (string imagePath in fileList)
             {
                 Console.WriteLine("Resizing " + imagePath);
