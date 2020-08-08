@@ -6,4 +6,8 @@
     <RootNamespace>photography_gallery_image_resizer</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0" />
+  </ItemGroup>
+
 </Project>
