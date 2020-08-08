@@ -18,7 +18,7 @@ namespace photography_gallery_image_resizer
             if (args.Length != 2)
             {
                 Console.WriteLine("Please provide two arguments - \"INPUT DIRECTORY\" \"OUTPUT DIRECTORY\"");
-                Environment.ExitCode = -1;
+                Environment.Exit(-1);
             }
 
             string inputDirectory = args[0];
@@ -31,7 +31,7 @@ namespace photography_gallery_image_resizer
             else
             {
                 Console.WriteLine("Input directory provided (" + inputDirectory + ") does not exist");
-                Environment.ExitCode = -1;
+                Environment.Exit(-1);
             }
         }
 
