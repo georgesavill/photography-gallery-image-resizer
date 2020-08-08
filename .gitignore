@@ -348,3 +348,4 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+/photography-gallery-image-resizer/photography-gallery-image-resizer/Properties/launchSettings.json
