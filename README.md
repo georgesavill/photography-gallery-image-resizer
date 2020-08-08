@@ -1,0 +1,1 @@
+# photography-gallery-image-resizer
