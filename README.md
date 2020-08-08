@@ -14,3 +14,4 @@ docker build -t photo-resizer .
 ```
 docker run -v [INPUT DIRECTORY]:/data/input -v [OUTPUT DIRECTORY]:/data/output photo-resizer
 ```
+Or use docker-compose.
