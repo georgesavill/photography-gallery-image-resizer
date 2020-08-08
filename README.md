@@ -1,6 +1,6 @@
 # photography-gallery-image-resizer
 
-Image resizing application to generate thumbnail (315px wide) and preview (765px wide) images for the [https://github.com/georgesavill/photography-gallery](photography-gallery) website project.
+Image resizing application to generate thumbnail (315px wide) and preview (765px wide) images for the [photography-gallery](https://github.com/georgesavill/photography-gallery) website project.
 
 As a console application, it takes two arguments: input directory, output directory.
 
