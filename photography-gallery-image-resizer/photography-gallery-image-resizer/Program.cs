@@ -8,6 +8,8 @@ namespace photography_gallery_image_resizer
 {
     class Program
     {
+        static int thumbnailWidth = 315;
+        static int previewWidth = 765;
         static void Main(string[] args)
         {
             if (args.Length != 2)
@@ -33,26 +35,25 @@ namespace photography_gallery_image_resizer
         static void ProcessImages(string inputDirectory, string outputDirectory)
         {
             string[] fileList = Directory.GetFiles(inputDirectory, "*.jpg", SearchOption.AllDirectories);
-            foreach (string imagePath in fileList) {
+            foreach (string imagePath in fileList)
+            {
                 Console.WriteLine("Resizing " + imagePath);
-                ResizeImage(imagePath, 315, "_thumbnail", inputDirectory, outputDirectory);
-                ResizeImage(imagePath, 765, "_preview", inputDirectory, outputDirectory);
+                string uploadedImageFileName = imagePath.Split(".").First().Split("\\").Last();
+                string uploadedImageExtension = imagePath.Split(".").Last();
+                string targetDirectory = outputDirectory + GetRelativeImageDirectory(inputDirectory, imagePath);
+
+                Directory.CreateDirectory(targetDirectory);
+
+                ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension);
+                ResizeImage(imagePath, previewWidth, "_preview", uploadedImageFileName, targetDirectory, uploadedImageExtension);
             }
         }
 
-        static void ResizeImage(string imagePath, int newWidth, string outputType, string inputDirectory, string outputDirectory)
+        static void ResizeImage(string imagePath, int newWidth, string outputType, string uploadedImageFileName, string uploadedImageDirectory, string uploadedImageExtension)
         {
             using Image image = Image.Load(imagePath);
-
             image.Mutate(x => x.Resize(newWidth, Convert.ToInt32(newWidth * GetImageRatio(image.Width, image.Height))));
-
-            string uploadedImageFileName = imagePath.Split(".").First().Split("\\").Last();
-            string uploadedImageDirectory = GetRelativeImageDirectory(inputDirectory, imagePath);
-            string uploadedImageExtension = imagePath.Split(".").Last();
-
-            Directory.CreateDirectory(outputDirectory + uploadedImageDirectory);
-
-            image.Save(outputDirectory + uploadedImageDirectory + "//" + uploadedImageFileName + outputType + "." + uploadedImageExtension);
+            image.Save(uploadedImageDirectory + "//" + uploadedImageFileName + outputType + "." + uploadedImageExtension);
         }
 
         static string GetRelativeImageDirectory(string inputDirectory, string imagePath)
