@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
@@ -10,6 +11,8 @@ namespace photography_gallery_image_resizer
     {
         static int thumbnailWidth = 315;
         static int previewWidth = 765;
+        static string directorySeparator = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "\\" : "/";
+
         static void Main(string[] args)
         {
             if (args.Length != 2)
@@ -38,7 +41,7 @@ namespace photography_gallery_image_resizer
             foreach (string imagePath in fileList)
             {
                 Console.WriteLine("Resizing " + imagePath);
-                string uploadedImageFileName = imagePath.Split(".").First().Split("\\").Last();
+                string uploadedImageFileName = imagePath.Split(".").First().Split(directorySeparator).Last();
                 string uploadedImageExtension = imagePath.Split(".").Last();
                 string targetDirectory = outputDirectory + GetRelativeImageDirectory(inputDirectory, imagePath);
 
@@ -47,7 +50,7 @@ namespace photography_gallery_image_resizer
                 ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension);
                 ResizeImage(imagePath, previewWidth, "_preview", uploadedImageFileName, targetDirectory, uploadedImageExtension);
 
-                File.Move(imagePath, targetDirectory + "\\" + uploadedImageFileName + "." + uploadedImageExtension);
+                File.Move(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension);
             }
             DeleteEmptyDirectories(inputDirectory);
         }
@@ -56,14 +59,14 @@ namespace photography_gallery_image_resizer
         {
             using Image image = Image.Load(imagePath);
             image.Mutate(x => x.Resize(newWidth, Convert.ToInt32(newWidth * GetImageRatio(image.Width, image.Height))));
-            image.Save(uploadedImageDirectory + "//" + uploadedImageFileName + outputType + "." + uploadedImageExtension);
+            image.Save(uploadedImageDirectory + directorySeparator + uploadedImageFileName + outputType + "." + uploadedImageExtension);
         }
 
         static string GetRelativeImageDirectory(string inputDirectory, string imagePath)
         {
-            string[] splitImagePath = imagePath.Split(inputDirectory).Last().Split("\\");
+            string[] splitImagePath = imagePath.Split(inputDirectory).Last().Split(directorySeparator);
             Array.Resize(ref splitImagePath, splitImagePath.Length - 1);
-            return string.Join("\\", splitImagePath);
+            return string.Join(directorySeparator, splitImagePath);
         }
 
         static float GetImageRatio(int width, int height)
