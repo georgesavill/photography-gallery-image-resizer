@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
 
 namespace photography_gallery_image_resizer
@@ -64,7 +65,8 @@ namespace photography_gallery_image_resizer
         {
             using Image image = Image.Load(imagePath);
             image.Mutate(x => x.Resize(newWidth, Convert.ToInt32(newWidth * GetImageRatio(image.Width, image.Height))));
-            image.Save(uploadedImageDirectory + directorySeparator + uploadedImageFileName + outputType + "." + uploadedImageExtension);
+            JpegEncoder encoder = new JpegEncoder { Quality = 75 };
+            image.Save(uploadedImageDirectory + directorySeparator + uploadedImageFileName + outputType + "." + uploadedImageExtension, encoder);
         }
 
         static string GetRelativeImageDirectory(string inputDirectory, string imagePath)
