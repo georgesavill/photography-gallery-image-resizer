@@ -87,7 +87,7 @@ namespace photography_gallery_image_resizer
             string[] directoryList = Directory.GetDirectories(inputDirectory, "*.*", SearchOption.AllDirectories);
             foreach (string dir in directoryList)
             {
-                Directory.Delete(dir, false);
+                Directory.Delete(dir, true);
             }
         }
     }
