@@ -4,7 +4,10 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 using SixLabors.ImageSharp.Processing;
+using StackExchange.Redis;
+
 
 namespace photography_gallery_image_resizer
 {
@@ -16,6 +19,9 @@ namespace photography_gallery_image_resizer
 
         static void Main(string[] args)
         {
+            ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("192.168.1.179:6379,allowAdmin=true");
+            IDatabase redisDatabase = redis.GetDatabase(9);
+
             if (args.Length != 2)
             {
                 Console.WriteLine("Please provide two arguments - \"INPUT DIRECTORY\" \"OUTPUT DIRECTORY\"");
@@ -27,7 +33,7 @@ namespace photography_gallery_image_resizer
 
             if (Directory.Exists(inputDirectory) && Directory.Exists(outputDirectory))
             {
-                ProcessImages(inputDirectory, outputDirectory);
+                ProcessImages(inputDirectory, outputDirectory, redisDatabase);
             }
             else
             {
@@ -36,7 +42,7 @@ namespace photography_gallery_image_resizer
             }
         }
 
-        static void ProcessImages(string inputDirectory, string outputDirectory)
+        static void ProcessImages(string inputDirectory, string outputDirectory, IDatabase redisDatabase)
         {
             string[] fileList = Directory.GetFiles(inputDirectory, "*.jpg", SearchOption.AllDirectories);
             if (fileList.Length == 0)
@@ -53,20 +59,27 @@ namespace photography_gallery_image_resizer
 
                 Directory.CreateDirectory(targetDirectory);
 
-                ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension);
-                ResizeImage(imagePath, previewWidth, "_preview", uploadedImageFileName, targetDirectory, uploadedImageExtension);
+                ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
+                ResizeImage(imagePath, previewWidth, "_preview", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
 
                 File.Move(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension);
             }
             DeleteEmptyDirectories(inputDirectory);
         }
 
-        static void ResizeImage(string imagePath, int newWidth, string outputType, string uploadedImageFileName, string uploadedImageDirectory, string uploadedImageExtension)
+        static void ResizeImage(string imagePath, int newWidth, string outputType, string uploadedImageFileName, string uploadedImageDirectory, string uploadedImageExtension, IDatabase redisDatabase)
         {
             using Image image = Image.Load(imagePath);
             image.Mutate(x => x.Resize(newWidth, Convert.ToInt32(newWidth * GetImageRatio(image.Width, image.Height))));
             JpegEncoder encoder = new JpegEncoder { Quality = 75 };
             image.Save(uploadedImageDirectory + directorySeparator + uploadedImageFileName + outputType + "." + uploadedImageExtension, encoder);
+            redisDatabase.HashSet(imagePath, new HashEntry[] {
+                new HashEntry("Model",image.Metadata.ExifProfile.GetValue(ExifTag.Model).ToString()),
+                new HashEntry("LensModel",image.Metadata.ExifProfile.GetValue(ExifTag.LensModel).ToString()),
+                new HashEntry("FNumber",image.Metadata.ExifProfile.GetValue(ExifTag.FNumber).ToString()),
+                new HashEntry("FocalLength",image.Metadata.ExifProfile.GetValue(ExifTag.FocalLength).ToString()),
+                new HashEntry("ExposureTime",image.Metadata.ExifProfile.GetValue(ExifTag.ExposureTime).ToString())
+            });
         }
 
         static string GetRelativeImageDirectory(string inputDirectory, string imagePath)
