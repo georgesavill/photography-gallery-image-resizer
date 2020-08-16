@@ -73,7 +73,7 @@ namespace photography_gallery_image_resizer
             image.Mutate(x => x.Resize(newWidth, Convert.ToInt32(newWidth * GetImageRatio(image.Width, image.Height))));
             JpegEncoder encoder = new JpegEncoder { Quality = 75 };
             image.Save(uploadedImageDirectory + directorySeparator + uploadedImageFileName + outputType + "." + uploadedImageExtension, encoder);
-            redisDatabase.HashSet(imagePath, new HashEntry[] {
+            redisDatabase.HashSet(uploadedImageFileName + "." + uploadedImageExtension, new HashEntry[] {
                 new HashEntry("Model",image.Metadata.ExifProfile.GetValue(ExifTag.Model).ToString()),
                 new HashEntry("LensModel",image.Metadata.ExifProfile.GetValue(ExifTag.LensModel).ToString()),
                 new HashEntry("FNumber",FixFNumber(image.Metadata.ExifProfile.GetValue(ExifTag.FNumber).ToString())),
@@ -107,6 +107,7 @@ namespace photography_gallery_image_resizer
             float h = height;
             return h / w;
         }
+
         static void DeleteEmptyDirectories(string inputDirectory)
         {
             string[] directoryList = Directory.GetDirectories(inputDirectory, "*.*", SearchOption.AllDirectories);
