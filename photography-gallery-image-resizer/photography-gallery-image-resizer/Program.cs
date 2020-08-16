@@ -62,7 +62,7 @@ namespace photography_gallery_image_resizer
                 ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
                 ResizeImage(imagePath, previewWidth, "_preview", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
 
-                File.Move(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
+                File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
             }
             DeleteEmptyDirectories(inputDirectory);
         }
