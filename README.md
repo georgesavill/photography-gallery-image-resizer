@@ -12,7 +12,7 @@ To run as a docker container:
 docker build -t photo-resizer .
 ```
 ```
-docker run -v [INPUT DIRECTORY]:/data/input -v [OUTPUT DIRECTORY]:/data/output photo-resizer
+docker run -v [INPUT DIRECTORY]:/images/input -v [OUTPUT DIRECTORY]:/images/output photo-resizer
 ```
 
 Or use the following docker-compose.yml:
