@@ -1,7 +1,0 @@
-version: '3'
-services:
-  photo-resizer:
-    image: photo-resizer
-    volumes:
-      - /path/to/input/images:/images/input
-      - /path/to/output/images:/images/output
