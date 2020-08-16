@@ -64,7 +64,6 @@ namespace photography_gallery_image_resizer
 
                 File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
             }
-            DeleteEmptyDirectories(inputDirectory);
         }
 
         static void ResizeImage(string imagePath, int newWidth, string outputType, string uploadedImageFileName, string uploadedImageDirectory, string uploadedImageExtension, IDatabase redisDatabase)
@@ -106,15 +105,6 @@ namespace photography_gallery_image_resizer
             float w = width;
             float h = height;
             return h / w;
-        }
-
-        static void DeleteEmptyDirectories(string inputDirectory)
-        {
-            string[] directoryList = Directory.GetDirectories(inputDirectory, "*.*", SearchOption.AllDirectories);
-            foreach (string dir in directoryList)
-            {
-                Directory.Delete(dir, true);
-            }
         }
     }
 }
