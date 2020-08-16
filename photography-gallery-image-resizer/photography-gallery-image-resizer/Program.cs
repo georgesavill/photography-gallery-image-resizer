@@ -76,10 +76,22 @@ namespace photography_gallery_image_resizer
             redisDatabase.HashSet(imagePath, new HashEntry[] {
                 new HashEntry("Model",image.Metadata.ExifProfile.GetValue(ExifTag.Model).ToString()),
                 new HashEntry("LensModel",image.Metadata.ExifProfile.GetValue(ExifTag.LensModel).ToString()),
-                new HashEntry("FNumber",image.Metadata.ExifProfile.GetValue(ExifTag.FNumber).ToString()),
+                new HashEntry("FNumber",FixFNumber(image.Metadata.ExifProfile.GetValue(ExifTag.FNumber).ToString())),
                 new HashEntry("FocalLength",image.Metadata.ExifProfile.GetValue(ExifTag.FocalLength).ToString()),
                 new HashEntry("ExposureTime",image.Metadata.ExifProfile.GetValue(ExifTag.ExposureTime).ToString())
             });
+        }
+        
+        static string FixFNumber(string input)
+        {
+            string[] splitInput = input.Split("/");
+            if (splitInput.Length == 1) {
+                return input;
+            } 
+            else
+            {
+                return (float.Parse(splitInput[0]) / 10).ToString();
+            }
         }
 
         static string GetRelativeImageDirectory(string inputDirectory, string imagePath)
