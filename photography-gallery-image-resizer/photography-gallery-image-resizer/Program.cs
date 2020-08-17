@@ -13,8 +13,8 @@ namespace photography_gallery_image_resizer
 {
     class Program
     {
-        static int thumbnailWidth = 315;
-        static int previewWidth = 765;
+        static int thumbnailWidth = 357;
+        static int previewWidth = 766;
         static string directorySeparator = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "\\" : "/";
 
         static void Main(string[] args)
