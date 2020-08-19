@@ -71,7 +71,6 @@ namespace photography_gallery_image_resizer
                 Directory.CreateDirectory(targetDirectory);
 
                 ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
-                ResizeImage(imagePath, previewWidth, "_preview", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
 
                 File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
             }
@@ -90,6 +89,8 @@ namespace photography_gallery_image_resizer
                 new HashEntry("FocalLength",image.Metadata.ExifProfile.GetValue(ExifTag.FocalLength).ToString()),
                 new HashEntry("ExposureTime",image.Metadata.ExifProfile.GetValue(ExifTag.ExposureTime).ToString())
             });
+
+            if (outputType == "_thumbnail") { ResizeImage(imagePath, newWidth, "_preview", uploadedImageFileName, uploadedImageDirectory, uploadedImageExtension, redisDatabase); }
         }
         
         static string FixFNumber(string input)
