@@ -51,28 +51,23 @@ namespace photography_gallery_image_resizer
                 Environment.Exit(-1);
             }
 
-            foreach (string image in fileList)
-            {
-                if (File.Exists(outputDirectory + image.Split(inputDirectory)[1])) {
-                    Console.WriteLine(image + " exists!");
-                } else
-                {
-                    Console.WriteLine(image + " doesnt exist!");
-                }
-            }
-
             foreach (string imagePath in fileList)
             {
-                Console.WriteLine("Resizing " + imagePath);
                 string uploadedImageFileName = imagePath.Split(".").First().Split(directorySeparator).Last();
                 string uploadedImageExtension = imagePath.Split(".").Last();
                 string targetDirectory = outputDirectory + GetRelativeImageDirectory(inputDirectory, imagePath);
 
+                if (File.Exists(outputDirectory + imagePath.Split(inputDirectory)[1])) {
+                    Console.WriteLine(imagePath + " has already been resized, skipping...");
+                    // TODO: Check for file differences, and don't skip if the input and output files don't match
+                } 
+                else
+                {
+                Console.WriteLine("Resizing " + imagePath);
                 Directory.CreateDirectory(targetDirectory);
-
                 ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
-
                 File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
+                }
             }
         }
 
