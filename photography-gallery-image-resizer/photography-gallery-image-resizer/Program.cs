@@ -50,6 +50,17 @@ namespace photography_gallery_image_resizer
                 Console.WriteLine("No .jpg files present in input directory (" + inputDirectory + ")");
                 Environment.Exit(-1);
             }
+
+            foreach (string image in fileList)
+            {
+                if (File.Exists(outputDirectory + image.Split(inputDirectory)[1])) {
+                    Console.WriteLine(image + " exists!");
+                } else
+                {
+                    Console.WriteLine(image + " doesnt exist!");
+                }
+            }
+
             foreach (string imagePath in fileList)
             {
                 Console.WriteLine("Resizing " + imagePath);
