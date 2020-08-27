@@ -63,16 +63,16 @@ namespace photography_gallery_image_resizer
                 } 
                 else
                 {
-                Console.WriteLine("Resizing " + imagePath);
-                Directory.CreateDirectory(targetDirectory);
-                ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
-                File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
+                    ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
+                    File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
                 }
             }
         }
 
         static void ResizeImage(string imagePath, int newWidth, string outputType, string uploadedImageFileName, string uploadedImageDirectory, string uploadedImageExtension, IDatabase redisDatabase)
         {
+            Console.WriteLine("Resizing " + imagePath);
+            Directory.CreateDirectory(uploadedImageDirectory);
             using Image image = Image.Load(imagePath);
             image.Mutate(x => x.Resize(newWidth, Convert.ToInt32(newWidth * GetImageRatio(image.Width, image.Height))));
             JpegEncoder encoder = new JpegEncoder { Quality = 75 };
