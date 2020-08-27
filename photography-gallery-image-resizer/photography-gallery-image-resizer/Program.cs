@@ -102,7 +102,7 @@ namespace photography_gallery_image_resizer
             Directory.CreateDirectory(uploadedImageDirectory);
             using Image image = Image.Load(imagePath);
             image.Mutate(x => x.Resize(newWidth, Convert.ToInt32(newWidth * GetImageRatio(image.Width, image.Height))));
-            JpegEncoder encoder = new JpegEncoder { Quality = 75 };
+            JpegEncoder encoder = new JpegEncoder { Quality = 80 };
             image.Save(uploadedImageDirectory + directorySeparator + uploadedImageFileName + outputType + "." + uploadedImageExtension, encoder);
             redisDatabase.HashSet(uploadedImageFileName + "." + uploadedImageExtension, new HashEntry[] {
                 new HashEntry("Model",image.Metadata.ExifProfile.GetValue(ExifTag.Model).ToString()),
@@ -112,7 +112,7 @@ namespace photography_gallery_image_resizer
                 new HashEntry("ExposureTime",image.Metadata.ExifProfile.GetValue(ExifTag.ExposureTime).ToString())
             });
 
-            if (outputType == "_thumbnail") { ResizeImage(imagePath, newWidth, "_preview", uploadedImageFileName, uploadedImageDirectory, uploadedImageExtension, redisDatabase); }
+            if (outputType == "_thumbnail") { ResizeImage(imagePath, previewWidth, "_preview", uploadedImageFileName, uploadedImageDirectory, uploadedImageExtension, redisDatabase); }
         }
         
         static string FixFNumber(string input)
