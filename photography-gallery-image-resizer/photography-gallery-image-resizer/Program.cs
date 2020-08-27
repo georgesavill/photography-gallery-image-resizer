@@ -59,14 +59,10 @@ namespace photography_gallery_image_resizer
                 string potentialExistingImage = outputDirectory + imagePath.Split(inputDirectory)[1];
 
                 if (File.Exists(potentialExistingImage)) {
-                    Console.WriteLine(imagePath + " has already been resized, checking if changed.");
+                    Console.WriteLine(imagePath + " exists in output directory, checking if changed.");
 
-                    FileInfo inputImage = new FileInfo(imagePath);
-                    FileInfo existingImage = new FileInfo(potentialExistingImage);
-
-                    if (inputImage.Length != existingImage.Length)
+                    if (ImagesAreDifferent(imagePath, potentialExistingImage))
                     {
-                        Console.WriteLine("Image size has changed, resizing new image");
                         ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
                         File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
                     }
@@ -77,6 +73,27 @@ namespace photography_gallery_image_resizer
                     File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
                 }
             }
+        }
+
+        static bool ImagesAreDifferent(string imagePath, string potentialExistingImage)
+        {
+            FileInfo inputImage = new FileInfo(imagePath);
+            FileInfo existingImage = new FileInfo(potentialExistingImage);
+
+            if (inputImage.Length != existingImage.Length) { 
+                Console.WriteLine("Image size has changed, resizing new image.");
+                return true; 
+            }
+            else if (!File.ReadAllBytes(inputImage.FullName).SequenceEqual(File.ReadAllBytes(existingImage.FullName)))
+            {
+                Console.WriteLine("Image is different, resizing new image.");
+                return true;
+            } else
+            {
+                Console.WriteLine("Image is identical, skipping.");
+                return false;
+            }
+
         }
 
         static void ResizeImage(string imagePath, int newWidth, string outputType, string uploadedImageFileName, string uploadedImageDirectory, string uploadedImageExtension, IDatabase redisDatabase)
