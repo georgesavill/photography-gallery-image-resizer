@@ -56,10 +56,20 @@ namespace photography_gallery_image_resizer
                 string uploadedImageFileName = imagePath.Split(".").First().Split(directorySeparator).Last();
                 string uploadedImageExtension = imagePath.Split(".").Last();
                 string targetDirectory = outputDirectory + GetRelativeImageDirectory(inputDirectory, imagePath);
+                string potentialExistingImage = outputDirectory + imagePath.Split(inputDirectory)[1];
 
-                if (File.Exists(outputDirectory + imagePath.Split(inputDirectory)[1])) {
-                    Console.WriteLine(imagePath + " has already been resized, skipping...");
-                    // TODO: Check for file differences, and don't skip if the input and output files don't match
+                if (File.Exists(potentialExistingImage)) {
+                    Console.WriteLine(imagePath + " has already been resized, checking if changed.");
+
+                    FileInfo inputImage = new FileInfo(imagePath);
+                    FileInfo existingImage = new FileInfo(potentialExistingImage);
+
+                    if (inputImage.Length != existingImage.Length)
+                    {
+                        Console.WriteLine("Image size has changed, resizing new image");
+                        ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
+                        File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
+                    }
                 } 
                 else
                 {
