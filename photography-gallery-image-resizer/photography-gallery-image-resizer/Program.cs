@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
@@ -50,15 +51,15 @@ namespace photography_gallery_image_resizer
                 Console.WriteLine("No .jpg files present in input directory (" + inputDirectory + ")");
                 Environment.Exit(-1);
             }
-
-            foreach (string imagePath in fileList)
+            Parallel.ForEach(fileList, (imagePath) =>
             {
                 string uploadedImageFileName = imagePath.Split(".").First().Split(directorySeparator).Last();
                 string uploadedImageExtension = imagePath.Split(".").Last();
                 string targetDirectory = outputDirectory + GetRelativeImageDirectory(inputDirectory, imagePath);
                 string potentialExistingImage = outputDirectory + imagePath.Split(inputDirectory)[1];
 
-                if (File.Exists(potentialExistingImage)) {
+                if (File.Exists(potentialExistingImage))
+                {
                     Console.WriteLine(imagePath + " exists in output directory, checking if changed.");
 
                     if (ImagesAreDifferent(imagePath, potentialExistingImage))
@@ -66,13 +67,13 @@ namespace photography_gallery_image_resizer
                         ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
                         File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
                     }
-                } 
+                }
                 else
                 {
                     ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
                     File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
                 }
-            }
+            });
         }
 
         static bool ImagesAreDifferent(string imagePath, string potentialExistingImage)
