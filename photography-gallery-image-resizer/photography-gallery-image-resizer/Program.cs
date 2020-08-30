@@ -14,8 +14,7 @@ namespace photography_gallery_image_resizer
 {
     class Program
     {
-        static int thumbnailWidth = 357;
-        static int previewWidth = 766;
+        static int[] imageSizes = { 357, 766, 1532 };
         static string directorySeparator = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "\\" : "/";
 
         static void Main(string[] args)
@@ -65,13 +64,19 @@ namespace photography_gallery_image_resizer
 
                     if (ImagesAreDifferent(imagePath, potentialExistingImage))
                     {
-                        ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
+                        foreach (int size in imageSizes)
+                        {
+                        ResizeImage(imagePath, size, uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
+                        }
                         File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
                     }
                 }
                 else
                 {
-                    ResizeImage(imagePath, thumbnailWidth, "_thumbnail", uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
+                    foreach (int size in imageSizes)
+                    {
+                        ResizeImage(imagePath, size, uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
+                    }
                     File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
                 }
             });
@@ -98,14 +103,14 @@ namespace photography_gallery_image_resizer
 
         }
 
-        static void ResizeImage(string imagePath, int newWidth, string outputType, string uploadedImageFileName, string uploadedImageDirectory, string uploadedImageExtension, IDatabase redisDatabase)
+        static void ResizeImage(string imagePath, int newWidth, string uploadedImageFileName, string uploadedImageDirectory, string uploadedImageExtension, IDatabase redisDatabase)
         {
             Console.WriteLine("Resizing " + imagePath);
             Directory.CreateDirectory(uploadedImageDirectory);
             using Image image = Image.Load(imagePath);
             image.Mutate(x => x.Resize(newWidth, Convert.ToInt32(newWidth * GetImageRatio(image.Width, image.Height))));
             JpegEncoder encoder = new JpegEncoder { Quality = 80 };
-            image.Save(uploadedImageDirectory + directorySeparator + uploadedImageFileName + outputType + "." + uploadedImageExtension, encoder);
+            image.Save(uploadedImageDirectory + directorySeparator + uploadedImageFileName + "_" + newWidth.ToString() + "." + uploadedImageExtension, encoder);
             redisDatabase.HashSet(uploadedImageFileName + "." + uploadedImageExtension, new HashEntry[] {
                 new HashEntry("Model",image.Metadata.ExifProfile.GetValue(ExifTag.Model).ToString()),
                 new HashEntry("LensModel",image.Metadata.ExifProfile.GetValue(ExifTag.LensModel).ToString()),
@@ -113,8 +118,6 @@ namespace photography_gallery_image_resizer
                 new HashEntry("FocalLength",image.Metadata.ExifProfile.GetValue(ExifTag.FocalLength).ToString()),
                 new HashEntry("ExposureTime",image.Metadata.ExifProfile.GetValue(ExifTag.ExposureTime).ToString())
             });
-
-            if (outputType == "_thumbnail") { ResizeImage(imagePath, previewWidth, "_preview", uploadedImageFileName, uploadedImageDirectory, uploadedImageExtension, redisDatabase); }
         }
         
         static string FixFNumber(string input)
