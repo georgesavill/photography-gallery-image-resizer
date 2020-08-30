@@ -51,7 +51,8 @@ namespace photography_gallery_image_resizer
                 Console.WriteLine("No .jpg files present in input directory (" + inputDirectory + ")");
                 Environment.Exit(-1);
             }
-            Parallel.ForEach(fileList, (imagePath) =>
+            var opts = new ParallelOptions { MaxDegreeOfParallelism = Convert.ToInt32(Math.Ceiling((Environment.ProcessorCount * 0.75) * 1.0)) };
+            Parallel.ForEach(fileList, opts, (imagePath) =>
             {
                 string uploadedImageFileName = imagePath.Split(".").First().Split(directorySeparator).Last();
                 string uploadedImageExtension = imagePath.Split(".").Last();
