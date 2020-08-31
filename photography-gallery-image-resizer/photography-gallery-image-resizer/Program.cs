@@ -14,7 +14,7 @@ namespace photography_gallery_image_resizer
 {
     class Program
     {
-        static int[] imageSizes = { 357, 766, 1532 };
+        static int[] imageSizes = { 400, 800, 1600 };
         static string directorySeparator = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "\\" : "/";
 
         static void Main(string[] args)
