@@ -115,7 +115,10 @@ namespace photography_gallery_image_resizer
                 new HashEntry("LensModel",image.Metadata.ExifProfile.GetValue(ExifTag.LensModel).ToString()),
                 new HashEntry("FNumber",FixFNumber(image.Metadata.ExifProfile.GetValue(ExifTag.FNumber).ToString())),
                 new HashEntry("FocalLength",image.Metadata.ExifProfile.GetValue(ExifTag.FocalLength).ToString()),
-                new HashEntry("ExposureTime",image.Metadata.ExifProfile.GetValue(ExifTag.ExposureTime).ToString())
+                new HashEntry("ExposureTime",image.Metadata.ExifProfile.GetValue(ExifTag.ExposureTime).ToString()),
+                new HashEntry("Height",image.Height),
+                new HashEntry("Width",image.Width),
+                new HashEntry("AspectRatio",GetImageRatio(image.Width, image.Height))
             });
         }
         
