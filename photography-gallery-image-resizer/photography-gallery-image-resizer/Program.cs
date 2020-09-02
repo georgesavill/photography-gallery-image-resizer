@@ -60,7 +60,6 @@ namespace photography_gallery_image_resizer
 
                 if (File.Exists(potentialExistingImage))
                 {
-                    Console.WriteLine(imagePath + " exists in output directory, checking if changed.");
 
                     if (ImagesAreDifferent(imagePath, potentialExistingImage))
                     {
@@ -75,6 +74,7 @@ namespace photography_gallery_image_resizer
                 {
                     foreach (int size in imageSizes)
                     {
+                        Console.WriteLine(imagePath + " is a new image, resizing...");
                         ResizeImage(imagePath, size, uploadedImageFileName, targetDirectory, uploadedImageExtension, redisDatabase);
                     }
                     File.Copy(imagePath, targetDirectory + directorySeparator + uploadedImageFileName + "." + uploadedImageExtension, true);
@@ -88,16 +88,16 @@ namespace photography_gallery_image_resizer
             FileInfo existingImage = new FileInfo(potentialExistingImage);
 
             if (inputImage.Length != existingImage.Length) { 
-                Console.WriteLine("Image size has changed, resizing new image.");
+                Console.WriteLine(imagePath + " exists in output directory, but the image size has changed, resizing...");
                 return true; 
             }
             else if (!File.ReadAllBytes(inputImage.FullName).SequenceEqual(File.ReadAllBytes(existingImage.FullName)))
             {
-                Console.WriteLine("Image is different, resizing new image.");
+                Console.WriteLine(imagePath + " exists in output directory, but the image content has changed, resizing...");
                 return true;
             } else
             {
-                Console.WriteLine("Image is identical, skipping.");
+                Console.WriteLine(imagePath + " exists in output directory, and is identical to the input image, skipping..."); ;
                 return false;
             }
 
@@ -105,7 +105,6 @@ namespace photography_gallery_image_resizer
 
         static void ResizeImage(string imagePath, int newWidth, string uploadedImageFileName, string uploadedImageDirectory, string uploadedImageExtension, IDatabase redisDatabase)
         {
-            Console.WriteLine("Resizing " + imagePath);
             Directory.CreateDirectory(uploadedImageDirectory);
             using Image image = Image.Load(imagePath);
             image.Mutate(x => x.Resize(newWidth, Convert.ToInt32(newWidth * GetImageRatio(image.Width, image.Height))));
