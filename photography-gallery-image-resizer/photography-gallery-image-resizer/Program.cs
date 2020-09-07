@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Metadata.Profiles.Exif;
 using SixLabors.ImageSharp.Processing;
 using StackExchange.Redis;
@@ -108,8 +109,16 @@ namespace photography_gallery_image_resizer
             Directory.CreateDirectory(uploadedImageDirectory);
             using Image image = Image.Load(imagePath);
             image.Mutate(x => x.Resize(newWidth, Convert.ToInt32(newWidth * GetImageRatio(image.Width, image.Height))));
-            JpegEncoder encoder = new JpegEncoder { Quality = 80 };
-            image.Save(uploadedImageDirectory + directorySeparator + uploadedImageFileName + "_" + newWidth.ToString() + "." + uploadedImageExtension, encoder);
+            int imageQuality;
+            if (newWidth < 500)
+            {
+                imageQuality = 75;
+            } else
+            {
+                imageQuality = 65;
+            }
+            JpegEncoder encoder = new JpegEncoder { Quality = imageQuality };
+            image.Save(uploadedImageDirectory + directorySeparator + uploadedImageFileName + "_" + newWidth.ToString() + ".jpg", encoder);
             redisDatabase.HashSet(uploadedImageFileName + "." + uploadedImageExtension, new HashEntry[] {
                 new HashEntry("Model",image.Metadata.ExifProfile.GetValue(ExifTag.Model).ToString()),
                 new HashEntry("LensModel",image.Metadata.ExifProfile.GetValue(ExifTag.LensModel).ToString()),
