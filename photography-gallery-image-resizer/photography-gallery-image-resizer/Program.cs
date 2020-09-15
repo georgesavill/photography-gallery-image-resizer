@@ -15,7 +15,7 @@ namespace photography_gallery_image_resizer
 
         static void Main(string[] args)
         {
-            ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("192.168.1.197:6379,allowAdmin=true"); // TODO: Read from config file
+            ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("192.168.1.101:6379,allowAdmin=true"); // TODO: Read from config file
             IDatabase redisDatabase = redis.GetDatabase(9);
 
             if (args.Length != 2)
