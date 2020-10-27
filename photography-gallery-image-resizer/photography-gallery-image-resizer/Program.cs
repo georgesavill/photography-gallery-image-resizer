@@ -119,7 +119,12 @@ namespace photography_gallery_image_resizer
                     new HashEntry("Dimensions",image.Width.ToString() + "," + image.Height.ToString()),
                     new HashEntry("AspectRatio",GetImageRatio(image.Width, image.Height))
                 });
+
                 Console.WriteLine("Redis data added for: " + redisReference);
+                Console.WriteLine("Image Height: " + image.Height);
+                Console.WriteLine("Image Width: " + image.Width);
+                Console.WriteLine("Image Dimensions: " + image.Width.ToString() + "," + image.Height.ToString());
+
                 image.Resize(newWidth, Convert.ToInt32(newWidth * GetImageRatio(image.Width, image.Height)));
                 image.Strip();
                 int imageQuality;
