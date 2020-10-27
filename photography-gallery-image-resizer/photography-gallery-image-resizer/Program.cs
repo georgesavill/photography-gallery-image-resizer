@@ -107,7 +107,8 @@ namespace photography_gallery_image_resizer
             using (MagickImage image = new MagickImage(imagePath))
             {
                 IExifProfile metadata = image.GetExifProfile();
-                redisDatabase.HashSet(uploadedImageFileName + "." + uploadedImageExtension, new HashEntry[] {
+                string redisReference = uploadedImageFileName + "." + uploadedImageExtension;
+                redisDatabase.HashSet(redisReference, new HashEntry[] {
                     new HashEntry("Model",metadata.GetValue(ExifTag.Model).ToString()),
                     new HashEntry("LensModel",metadata.GetValue(ExifTag.LensModel).ToString()),
                     new HashEntry("FNumber",FixFNumber(metadata.GetValue(ExifTag.FNumber).ToString())),
@@ -118,7 +119,7 @@ namespace photography_gallery_image_resizer
                     new HashEntry("Dimensions",image.Width.ToString() + "," + image.Height.ToString()),
                     new HashEntry("AspectRatio",GetImageRatio(image.Width, image.Height))
                 });
-
+                Console.WriteLine("Redis data added for: " + redisReference);
                 image.Resize(newWidth, Convert.ToInt32(newWidth * GetImageRatio(image.Width, image.Height)));
                 image.Strip();
                 int imageQuality;
