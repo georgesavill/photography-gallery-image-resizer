@@ -115,6 +115,7 @@ namespace photography_gallery_image_resizer
                     new HashEntry("ExposureTime",metadata.GetValue(ExifTag.ExposureTime).ToString()),
                     new HashEntry("Height",image.Height),
                     new HashEntry("Width",image.Width),
+                    new HashEntry("Dimensions",image.Width.ToString() + "," + image.Height.ToString()),
                     new HashEntry("AspectRatio",GetImageRatio(image.Width, image.Height))
                 });
 
